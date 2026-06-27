@@ -5,11 +5,30 @@ export const useStore = create((set) => ({
     name: "",
     username: "",
     email: "",
+    password: "",
     mobile: "",
   },
+  registeredUsers: (() => {
+    const cached = JSON.parse(localStorage.getItem("super_app_registered_users"));
+    if (cached && Array.isArray(cached)) {
+      return cached;
+    }
+    const defaultUsers = [
+      {
+        name: "Test User",
+        username: "testuser",
+        email: "test@example.com",
+        password: "password123",
+        mobile: "9876543210"
+      }
+    ];
+    localStorage.setItem("super_app_registered_users", JSON.stringify(defaultUsers));
+    return defaultUsers;
+  })(),
   categories: JSON.parse(localStorage.getItem("super_app_categories")) || [],
   notes: localStorage.getItem("super_app_notes") || "",
   watchlist: JSON.parse(localStorage.getItem("super_app_watchlist")) || [],
+  recentlyViewed: JSON.parse(localStorage.getItem("super_app_recently_viewed")) || [],
   activeCity: localStorage.getItem("super_app_active_city") || "New York",
   apiKeys: (() => {
     const cached = JSON.parse(localStorage.getItem("super_app_apikeys"));
@@ -28,6 +47,17 @@ export const useStore = create((set) => ({
   setUser: (userData) => {
     localStorage.setItem("super_app_user", JSON.stringify(userData));
     set({ user: userData });
+  },
+  
+  registerUser: (newUser) => {
+    set((state) => {
+      if (state.registeredUsers.some((u) => u.username.toLowerCase() === newUser.username.toLowerCase() || u.email.toLowerCase() === newUser.email.toLowerCase())) {
+        return state;
+      }
+      const updated = [...state.registeredUsers, newUser];
+      localStorage.setItem("super_app_registered_users", JSON.stringify(updated));
+      return { registeredUsers: updated };
+    });
   },
   
   setCategories: (categoryArray) => {
@@ -64,6 +94,15 @@ export const useStore = create((set) => ({
     });
   },
 
+  addToRecentlyViewed: (movie) => {
+    set((state) => {
+      const filtered = state.recentlyViewed.filter((m) => m.imdbID !== movie.imdbID);
+      const updated = [movie, ...filtered].slice(0, 10);
+      localStorage.setItem("super_app_recently_viewed", JSON.stringify(updated));
+      return { recentlyViewed: updated };
+    });
+  },
+
   setApiKeys: (keys) => {
     const updated = typeof keys === 'function' ? keys(set.getState().apiKeys) : keys;
     localStorage.setItem("super_app_apikeys", JSON.stringify(updated));
@@ -77,6 +116,8 @@ export const useStore = create((set) => ({
     localStorage.removeItem("super_app_watchlist");
     localStorage.removeItem("super_app_active_city");
     localStorage.removeItem("super_app_apikeys");
+    localStorage.removeItem("super_app_registered_users");
+    localStorage.removeItem("super_app_recently_viewed");
     
     const defaultKeys = {
       weather: "f224576e2bf9c25b392c2a711d4f6277",
@@ -85,11 +126,24 @@ export const useStore = create((set) => ({
     };
     localStorage.setItem("super_app_apikeys", JSON.stringify(defaultKeys));
 
+    const defaultUsers = [
+      {
+        name: "Test User",
+        username: "testuser",
+        email: "test@example.com",
+        password: "password123",
+        mobile: "9876543210"
+      }
+    ];
+    localStorage.setItem("super_app_registered_users", JSON.stringify(defaultUsers));
+
     set({
-      user: { name: "", username: "", email: "", mobile: "" },
+      user: { name: "", username: "", email: "", password: "", mobile: "" },
+      registeredUsers: defaultUsers,
       categories: [],
       notes: "",
       watchlist: [],
+      recentlyViewed: [],
       activeCity: "New York",
       apiKeys: defaultKeys
     });
