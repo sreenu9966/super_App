@@ -10,6 +10,9 @@ const Movies = () => {
   const [moviesByCategory, setMoviesByCategory] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedMovieId, setSelectedMovieId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   const handleRemove = (e, imdbID) => {
     e.stopPropagation();
@@ -29,6 +32,31 @@ const Movies = () => {
   const handleMovieClick = (movie) => {
     setSelectedMovieId(movie.imdbID);
     addToRecentlyViewed(movie);
+  };
+
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    setSearchLoading(true);
+    try {
+      const results = await searchMovieByGenre(searchQuery, apiKeys.movies);
+      setSearchResults(results || []);
+    } catch (err) {
+      console.error("Failed to search movies:", err);
+      setSearchResults([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const handleSearchChange = (val) => {
+    setSearchQuery(val);
+    if (!val.trim()) {
+      setSearchResults([]);
+    }
   };
 
   useEffect(() => {
@@ -101,6 +129,142 @@ const Movies = () => {
           <h2>Suggested Entertainment For You</h2>
           <p>Personalized recommendations compiled based on your onboard interest chips.</p>
         </div>
+
+        {/* Search Bar Form */}
+        <form onSubmit={handleSearchSubmit} className="movie-search-form" style={{ marginBottom: "2rem", display: "flex", gap: "0.75rem" }}>
+          <div className="form-input-wrapper" style={{ flex: 1, margin: 0 }}>
+            <svg className="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" style={{ width: "16px", height: "16px" }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              className="form-input form-input-with-icon"
+              placeholder="Search for any movie title..."
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              style={{
+                background: "rgba(30, 41, 59, 0.3)",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                borderRadius: "var(--border-radius-sm)",
+                paddingLeft: "2.75rem",
+                height: "44px"
+              }}
+            />
+            {searchQuery && (
+              <button 
+                type="button" 
+                onClick={() => handleSearchChange("")}
+                style={{
+                  position: "absolute",
+                  right: "12px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "none",
+                  border: "none",
+                  color: "var(--text-secondary)",
+                  cursor: "pointer",
+                  fontSize: "1.25rem",
+                  zIndex: 5
+                }}
+              >
+                ×
+              </button>
+            )}
+          </div>
+          <button 
+            type="submit" 
+            className="btn btn-primary" 
+            style={{ height: "44px", padding: "0 1.5rem", borderRadius: "var(--border-radius-sm)" }}
+          >
+            Search
+          </button>
+        </form>
+
+        {/* Search Results Section */}
+        {searchQuery.trim() && (
+          <div className="watchlist-section animate-slide-up" style={{ marginBottom: "2.5rem" }}>
+            <div className="category-section-header">
+              <h3 className="category-section-title" style={{ color: "var(--color-primary)", paddingLeft: "0.75rem" }}>
+                Search Results for "{searchQuery}"
+              </h3>
+              <span className="count-badge">{searchResults.length} Found</span>
+            </div>
+
+            {searchLoading ? (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem 0", gap: "0.75rem" }}>
+                <div className="loading-spinner" style={{ width: "20px", height: "20px" }}></div>
+                <p style={{ color: "var(--text-secondary)", margin: 0, fontSize: "0.9rem" }}>Searching cinema catalog...</p>
+              </div>
+            ) : searchResults.length === 0 ? (
+              <p className="no-movies-text" style={{ padding: "0.5rem 0", color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                No movies found matching "{searchQuery}". Check the title spelling or enter an OMDB API Key.
+              </p>
+            ) : (
+              <div className="movie-carousel-container">
+                <button 
+                  className="scroll-arrow-btn left" 
+                  onClick={() => scrollContainer("scroll-search-results", "left")}
+                  title="Scroll Left"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+
+                <div id="scroll-search-results" className="movie-horizontal-scroll">
+                  {searchResults.map((movie) => {
+                    const isBookmarked = watchlist.some((m) => m.imdbID === movie.imdbID);
+                    
+                    return (
+                      <div 
+                        key={movie.imdbID} 
+                        className="movie-card-wrapper"
+                        onClick={() => handleMovieClick(movie)}
+                      >
+                        <div className="movie-card-poster">
+                          {movie.Poster && movie.Poster !== "N/A" ? (
+                            <img src={movie.Poster} alt={movie.Title} className="movie-poster-img" />
+                          ) : (
+                            <div className="movie-poster-fallback">
+                              <Film size={32} />
+                            </div>
+                          )}
+                          
+                          <button 
+                            className={`card-bookmark-toggle-btn ${isBookmarked ? "active" : ""}`}
+                            onClick={(e) => toggleWatchlist(e, movie)}
+                            title={isBookmarked ? "Remove from Watchlist" : "Add to Watchlist"}
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill={isBookmarked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.5">
+                              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                          </button>
+
+                          <div className="movie-card-hover-overlay">
+                            <div className="play-icon-circle">
+                              <Play fill="currentColor" size={20} />
+                            </div>
+                            <span>View Info</span>
+                          </div>
+                        </div>
+                        <div className="movie-card-info">
+                          <h4 className="movie-card-title" title={movie.Title}>{movie.Title}</h4>
+                          <span className="movie-card-year">{movie.Year}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <button 
+                  className="scroll-arrow-btn right" 
+                  onClick={() => scrollContainer("scroll-search-results", "right")}
+                  title="Scroll Right"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
 
         {/* Recently Viewed Section */}
