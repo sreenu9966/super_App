@@ -10,6 +10,13 @@ const Register = () => {
   const registerUser = useStore((state) => state.registerUser);
   const navigate = useNavigate();
 
+  const scrollToForm = () => {
+    const el = document.getElementById("auth-form-section");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const [authMode, setAuthMode] = useState("signup"); // 'signup' or 'signin'
   const [loginData, setLoginData] = useState({
     email: "",
@@ -336,6 +343,14 @@ const Register = () => {
               </div>
             </div>
 
+            <button 
+              type="button" 
+              className="mobile-get-started-btn btn btn-primary"
+              onClick={scrollToForm}
+            >
+              Get Started
+            </button>
+
             <div className="art-floating-grid">
               <div className="floating-bubble bubble-1"></div>
               <div className="floating-bubble bubble-2"></div>
@@ -348,7 +363,7 @@ const Register = () => {
         </div>
 
         {/* Right Side: Form Panel */}
-        <div className="auth-card-form">
+        <div id="auth-form-section" className="auth-card-form">
           <div className="form-header">
             <h2>{authMode === "signup" ? "Create an account" : "Sign In to Super App"}</h2>
             <p style={{ display: "inline-flex", gap: "0.35rem", flexWrap: "wrap" }}>
@@ -392,83 +407,87 @@ const Register = () => {
 
           {authMode === "signup" ? (
             <form onSubmit={handleFormSubmission} className="form-container">
-              <div className="form-group">
-                <label className="form-label">Name</label>
-                <div className="form-input-wrapper">
-                  <svg className="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  <input
-                    type="text"
-                    className={`${getInputClass("name")} form-input-with-icon`}
-                    placeholder="John Doe"
-                    value={formData.name}
-                    onChange={(e) => handleFieldChange("name", e.target.value)}
-                    onBlur={() => handleBlur("name")}
-                  />
-                </div>
-                {errors.name && <span className="error-text">{errors.name}</span>}
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Username</label>
-                <div className="form-input-wrapper">
-                  <svg className="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                  </svg>
-                  <input
-                    type="text"
-                    className={`${getInputClass("username")} form-input-with-icon`}
-                    placeholder="johndoe123"
-                    value={formData.username}
-                    onChange={(e) => handleFieldChange("username", e.target.value)}
-                    onBlur={() => handleBlur("username")}
-                    style={{ paddingRight: "4rem" }}
-                  />
-                  <div style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", display: "flex", gap: "0.25rem", alignItems: "center", zIndex: 5 }}>
-                    {checkingUsername && <span className="input-loading-indicator"></span>}
-                    {!checkingUsername && usernameAvailable && (
-                      <span className="username-available-text" style={{ fontSize: "0.75rem", color: "#10b981", fontWeight: "600" }}>Available</span>
-                    )}
+              <div className="form-row">
+                <div className="form-group flex-1">
+                  <label className="form-label">Name</label>
+                  <div className="form-input-wrapper">
+                    <svg className="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <input
+                      type="text"
+                      className={`${getInputClass("name")} form-input-with-icon`}
+                      placeholder="John Doe"
+                      value={formData.name}
+                      onChange={(e) => handleFieldChange("name", e.target.value)}
+                      onBlur={() => handleBlur("name")}
+                    />
                   </div>
+                  {errors.name && <span className="error-text">{errors.name}</span>}
                 </div>
-                {errors.username && <span className="error-text">{errors.username}</span>}
+
+                <div className="form-group flex-1">
+                  <label className="form-label">Username</label>
+                  <div className="form-input-wrapper">
+                    <svg className="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                    </svg>
+                    <input
+                      type="text"
+                      className={`${getInputClass("username")} form-input-with-icon`}
+                      placeholder="johndoe123"
+                      value={formData.username}
+                      onChange={(e) => handleFieldChange("username", e.target.value)}
+                      onBlur={() => handleBlur("username")}
+                      style={{ paddingRight: "4rem" }}
+                    />
+                    <div style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)", display: "flex", gap: "0.25rem", alignItems: "center", zIndex: 5 }}>
+                      {checkingUsername && <span className="input-loading-indicator"></span>}
+                      {!checkingUsername && usernameAvailable && (
+                        <span className="username-available-text" style={{ fontSize: "0.75rem", color: "#10b981", fontWeight: "600" }}>Available</span>
+                      )}
+                    </div>
+                  </div>
+                  {errors.username && <span className="error-text">{errors.username}</span>}
+                </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Email Address</label>
-                <div className="form-input-wrapper">
-                  <svg className="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <input
-                    type="email"
-                    className={`${getInputClass("email")} form-input-with-icon`}
-                    placeholder="john@example.com"
-                    value={formData.email}
-                    onChange={(e) => handleFieldChange("email", e.target.value)}
-                    onBlur={() => handleBlur("email")}
-                  />
+              <div className="form-row">
+                <div className="form-group flex-1">
+                  <label className="form-label">Email Address</label>
+                  <div className="form-input-wrapper">
+                    <svg className="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <input
+                      type="email"
+                      className={`${getInputClass("email")} form-input-with-icon`}
+                      placeholder="john@example.com"
+                      value={formData.email}
+                      onChange={(e) => handleFieldChange("email", e.target.value)}
+                      onBlur={() => handleBlur("email")}
+                    />
+                  </div>
+                  {errors.email && <span className="error-text">{errors.email}</span>}
                 </div>
-                {errors.email && <span className="error-text">{errors.email}</span>}
-              </div>
 
-              <div className="form-group">
-                <label className="form-label">Password</label>
-                <div className="form-input-wrapper">
-                  <svg className="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  <input
-                    type="password"
-                    className={`${getInputClass("password")} form-input-with-icon`}
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={(e) => handleFieldChange("password", e.target.value)}
-                    onBlur={() => handleBlur("password")}
-                  />
+                <div className="form-group flex-1">
+                  <label className="form-label">Password</label>
+                  <div className="form-input-wrapper">
+                    <svg className="input-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <input
+                      type="password"
+                      className={`${getInputClass("password")} form-input-with-icon`}
+                      placeholder="••••••••"
+                      value={formData.password}
+                      onChange={(e) => handleFieldChange("password", e.target.value)}
+                      onBlur={() => handleBlur("password")}
+                    />
+                  </div>
+                  {errors.password && <span className="error-text">{errors.password}</span>}
                 </div>
-                {errors.password && <span className="error-text">{errors.password}</span>}
               </div>
 
               <div className="form-group">

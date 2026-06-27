@@ -2781,46 +2781,66 @@ h1, h2, h3, h4, h5, h6 {
    ========================================== */
 
 /* Mobile adjustments for Registration Page */
-@media (max-width: 900px) {
-  .register-art-panel {
-    height: auto !important;
-    padding: 3rem 1.5rem 2rem 1.5rem !important;
+@media (max-width: 768px) {
+  .register-page-container {
+    padding: 1rem !important;
+  }
+  
+  .unified-auth-card {
+    flex-direction: column !important;
+    min-height: auto !important;
+  }
+  
+  .auth-card-info {
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    padding: 2.5rem 1.5rem !important;
+  }
+
+  .auth-card-form {
+    width: 100% !important;
+    padding: 2.5rem 1.5rem !important;
   }
   
   .art-title {
-    font-size: 2.75rem !important;
+    font-size: 2.5rem !important;
     text-align: center;
     margin-bottom: 0.75rem !important;
-    text-shadow: 0 0 15px rgba(102, 252, 241, 0.2);
   }
   
   .art-subtitle {
-    font-size: 1rem !important;
+    font-size: 0.95rem !important;
     text-align: center;
-    line-height: 1.6;
-    max-width: 450px;
-    margin: 0 auto !important;
+    line-height: 1.5;
   }
   
-  /* Hide heavy visual items to prevent clutter and clipping on mobile viewports */
+  /* Hide preview widgets grid on small screens to reduce clutter */
+  .preview-widgets-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+    margin-top: 1.5rem !important;
+  }
+  
   .art-glass-mockup, 
   .art-floating-grid, 
   .art-footer-tag {
     display: none !important;
   }
+  
+  .mobile-get-started-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.5rem;
+    height: 46px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    box-shadow: 0 0 15px rgba(102, 252, 241, 0.35);
+  }
 
-  .register-form-panel {
-    padding: 1rem 1.5rem 3rem 1.5rem !important;
-  }
-  
-  .register-form-wrapper {
-    max-width: 100% !important;
-    padding: 2rem 1.5rem !important;
-    background: rgba(31, 40, 51, 0.5) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    border-radius: var(--border-radius-md) !important;
-  }
-  
   .form-header {
     text-align: center !important;
     margin-bottom: 1.5rem !important;
@@ -3187,4 +3207,82 @@ h1, h2, h3, h4, h5, h6 {
 
 .dropdown-item-row .trash-btn:hover {
   color: var(--color-danger) !important;
+}
+
+/* Auth Form Horizontal Grid Row Layout */
+.form-row {
+  display: flex;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.form-row .form-group {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Responsive stacking on mobile viewports */
+@media (max-width: 580px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+/* Movies Search Form Responsiveness */
+.movie-search-form {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.movie-search-input-wrapper {
+  flex: 1;
+  margin: 0 !important;
+}
+
+.movie-search-input {
+  background: rgba(30, 41, 59, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: var(--border-radius-sm) !important;
+  padding-left: 2.75rem !important;
+  height: 44px !important;
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 1.25rem;
+  z-index: 5;
+  padding: 4px;
+}
+
+.movie-search-btn {
+  height: 44px !important;
+  padding: 0 1.75rem !important;
+  border-radius: var(--border-radius-sm) !important;
+}
+
+/* Stacks search inputs vertically on mobile screens */
+@media (max-width: 480px) {
+  .movie-search-form {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .movie-search-btn {
+    width: 100% !important;
+  }
+}
+
+/* Get Started CTA button hidden on desktop */
+.mobile-get-started-btn {
+  display: none !important;
 }
